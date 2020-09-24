@@ -1,0 +1,41 @@
+# Produced by CVXGEN, 2017-04-25 21:53:09 -0400.
+# CVXGEN is Copyright (C) 2006-2012 Jacob Mattingley, jem@cvxgen.com.
+# The code in this file is Copyright (C) 2006-2012 Jacob Mattingley.
+# CVXGEN, or solvers produced by CVXGEN, cannot be used for commercial
+# applications without prior written permission from Jacob Mattingley.
+
+# Filename: description.cvxgen.
+# Description: A description of the CVXGEN problem.
+
+dimensions
+  n = 3
+  m = 1
+  T = 10
+end
+
+parameters
+  A[t] (n,n), t=0..T
+  B[t] (n,m), t=0..T
+  x[0] (n)
+  u_max nonnegative
+  u_min
+  xe[t] (n), t=0..T+1
+  Q (n,n) psd
+  R psd
+  Rd psd
+  Q_final (n,n) psd
+end
+
+variables
+
+  x[t] (n), t=1..T+1
+  u[t] (m) nonnegative , t=0..T
+end
+
+minimize
+  sum[t=0..T](quad(x[t]-xe[t], Q)+quad(u[t], R))+quad(x[T+1]-xe[T+1],Q_final)+sum[t=1..T](quad(u[t]-u[t-1], Rd))
+subject to
+  x[t+1] == A[t]*x[t]+B[t]*u[t], t=0..T
+  u[t] >= u_min, t=0..T
+  u[t] <= u_max, t=0..T
+end
